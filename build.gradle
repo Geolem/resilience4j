@@ -3,6 +3,7 @@ plugins {
     id 'org.asciidoctor.convert' version '1.6.0'
     id "org.gradle.test-retry" version "1.2.1"
     id "io.github.gradle-nexus.publish-plugin"  version "1.1.0"
+    id "me.champeau.jmh" version "0.6.5"
     id 'idea'
 }
 
@@ -11,7 +12,7 @@ apply from: "${rootDir}/libraries.gradle"
 allprojects {
     apply plugin: 'jacoco'
 
-    version = '1.7.1-SNAPSHOT'
+    version = '1.8.0-SNAPSHOT'
     group = 'io.github.resilience4j'
     description = 'Resilience4j is a lightweight, easy-to-use fault tolerance library designed for Java8 and functional programming'
 
@@ -29,7 +30,7 @@ ext {
 nexusPublishing {
     repositories {
         sonatype {
-            stagingProfileId = 'io.github.resilience4j'
+            stagingProfileId = '64e8d6879f4e95'
         }
     }
 }
@@ -41,6 +42,7 @@ configure(project.coreProjects) {
     apply plugin: 'signing'
     apply from: "${rootDir}/publishing.gradle"
     apply plugin: "org.gradle.test-retry"
+    apply plugin: 'me.champeau.jmh'
 
     tasks.withType(Test).all {
         if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_13)) {
