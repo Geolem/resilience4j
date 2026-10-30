@@ -8,6 +8,16 @@ ext {
 
 def projectArtifactId = 'resilience4j'
 def url = "https://resilience4j.readme.io"
+apply plugin: 'biz.aQute.bnd.builder'
+
+normalization {
+    runtimeClasspath {
+        metaInf {
+            ignoreAttribute("Build-Time")
+            ignoreAttribute("Build-Date")
+        }
+    }
+}
 
 jar {
     manifest {
@@ -20,6 +30,18 @@ jar {
                 'Specification-Version': project.version,
                 'Implementation-Title': projectArtifactId,
                 'Implementation-Version': project.version,
+        )
+    }
+    bundle {
+        bnd(
+                '-exportcontents': '!io.github.resilience4j.*.internal,*;-noimport:=true',
+                'Import-Package': '!javax.annotation,!javax.annotation.meta,*',
+                'Bundle-Description': 'A lightweight fault tolerance library',
+                'Bundle-DocURL': 'https://github.com/resilience4j/resilience4j',
+                'Bundle-Name': project.name,
+                'Bundle-SymbolicName': "${project.group}.${project.name}",
+                '-reproducible': "true",
+                '-noextraheaders': "true"
         )
     }
 }
@@ -39,13 +61,14 @@ artifacts {
     archives javadocJar
 }
 
-tasks.withType(Sign) {
-    onlyIf { !version.endsWith("SNAPSHOT") }
+signing {
+    def gpgKey = System.getenv("GPG_KEY")
+    def gpgPassphrase = System.getenv("GPG_PASSPHRASE")
+    required = gpgKey != null
+    useInMemoryPgpKeys(gpgKey, gpgPassphrase)
+    sign publishing.publications
 }
 
-signing {
-    sign configurations.archives
-}
 publishing {
     publications {
         resilience4j(MavenPublication) {

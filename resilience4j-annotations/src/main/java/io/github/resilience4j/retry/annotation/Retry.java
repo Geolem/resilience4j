@@ -39,7 +39,15 @@ public @interface Retry {
     String name();
 
     /**
+     * Configuration key to use if name is given as a SpEL expression share the same configuration
+     * @return the configuration key
+     */
+    String configuration() default "";
+
+    /**
      * fallbackMethod method name.
+     * It can be a SpEL expression. Use {@code "beanName::methodName"} to reference
+     * a fallback method on an external Spring bean.
      *
      * @return fallbackMethod method name.
      */
